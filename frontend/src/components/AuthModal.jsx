@@ -29,10 +29,12 @@ export const AuthModal = ({ mode, onClose, onSuccess }) => {
       const data = await res.json()
       if (!res.ok) throw new Error(data.message || "Something went wrong")
 
+        // SÄKERHETSBRIST (Information Disclosure): console.log("Auth successful:", data) och console.log(err) loggar känslig autentiseringsdata i webbläsarens konsol, synligt för vem som helst med tillgång till dev-verktygen.
       console.log("Auth successful:", data)
       onSuccess(data)
     } catch (err) {
       console.log(err)
+      // SÄKERHETSBRIST (User Enumeration): setError(err.message) visar exakta felmeddelanden från backend direkt i gränssnittet vilket kan avslöja för en angripare om ett konto existerar eller inte.
       setError(err.message)
     } finally {
       setSubmitting(false)
@@ -41,6 +43,7 @@ export const AuthModal = ({ mode, onClose, onSuccess }) => {
 
   return (
     <div onClick={onClose}>
+      {/* SÄKERHETSBRIST (Brute Force): Saknar begränsning av antal inloggningsförsök i formuläret, kan skickas hur många gånger som helst utan blockering. */}
       <form
         onClick={(e) => e.stopPropagation()}
         onSubmit={handleSubmit}
@@ -78,6 +81,7 @@ export const AuthModal = ({ mode, onClose, onSuccess }) => {
           />
         )}
 
+{/* POSITIVT: Använder type="password" för lösenordsfältet så att texten döljs. autoComplete är korrekt satt för respektive fält.*/}
         <input
           type="password"
           placeholder="Password"

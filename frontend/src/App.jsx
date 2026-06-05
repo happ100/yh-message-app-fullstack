@@ -13,6 +13,7 @@ export const App = () => {
 
   const fetchPosts = () => {
     setLoading(true)
+    // SÄKERHETSBRIST (BAC): /messages-endpointen hämtas utan autentisering. Vem som helst kan se alla meddelanden utan att vara inloggad.
     fetch(`${BASE_URL}/messages`)
       .then((res) => res.json())
       .then((data) => setMessageList(data))
@@ -27,11 +28,13 @@ export const App = () => {
     setMessageList([newMessage, ...messageList])
   }
 
+  //POSITIVT: handleUnauthorized nollställer användarsessionen när token går ut. Logout-funktionen finns och nollställer användaren korrekt.
   const handleUnauthorized = () => {
     setUser(null)
+    // SÄKERHETSBRIST (User Enumeration): Felmeddelandet "Your session has expired, please log in again" avslöjar info om sessionshanteringen för användaren.
     setError("Your session has expired, please log in again")
   }
-    
+
   return (
     <>
         {user ? (
@@ -64,10 +67,11 @@ export const App = () => {
         <AuthModal
           mode={modal}
           onClose={() => setModal(null)}
-          onSuccess={(data) => { 
+          onSuccess={(data) => {
+            // SÄKERHETSBRIST (Information Disclosure): console.log("User logged in:", data) loggar användardata i webbläsarens konsol vilket är synligt för vem som helst som öppnar dev-verktygen i webbläsaren. Bör tas bort i skarp miljö.
             console.log("User logged in:", data)
-            setUser(data) 
-            setModal(null) 
+            setUser(data)
+            setModal(null)
           }}
         />
       )}

@@ -6,6 +6,7 @@ export const PostMessage = ({ newMessage, fetchPosts, user, onUnauthorized }) =>
   const [errorMessage, setErrorMessage] = useState("")
   const [submitting, setSubmitting] = useState(false)
 
+// POSITIVT: Kräver att användaren är inloggad innan formuläret visas. Skickar JWT-token med varje anrop via Authorization-headern. Hanterar 401-svar korrekt via onUnauthorized.
   const handleFormSubmit = async (event) => {
     event.preventDefault()
     setSubmitting(true)
@@ -20,6 +21,7 @@ export const PostMessage = ({ newMessage, fetchPosts, user, onUnauthorized }) =>
         body: JSON.stringify({ message: newPost }),
       })
 
+      // SÄKERHETSBRIST (Information Disclosure): console.log("Token being sent:", user?.response?.accessToken) loggar JWT-token i klartext i webbläsarens konsol. Angripare med tillgång till konsolen kan stjäla token och utge sig för att vara användaren.
       console.log("Token being sent:", user?.response?.accessToken)
 
       if (res.status === 401) {
@@ -56,6 +58,7 @@ export const PostMessage = ({ newMessage, fetchPosts, user, onUnauthorized }) =>
     <div id="post-form-wrapper" className="post-wrapper">
       <p>What's making you happy right now?</p>
       <form id="post-form" onSubmit={handleFormSubmit}>
+        {/* SÄKERHETSBRIST (XSS/Injection): textarea-fältet saknar maxlength och ingen sanering av input sker innan det skickas till backend, skadlig kod kan skickas och lagras i databasen. */}
         <textarea
           id="post-textarea"
           rows="3"

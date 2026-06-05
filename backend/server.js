@@ -165,6 +165,7 @@ app.patch("/messages/:id", authenticateUser, async (req, res) => {
   }
 })
 
+// SÄKERHETSBRIST (BAC): DELETE-endpointen saknar autentisering (authenticateUser), vem som helst kan ta bort vilket meddelande som helst utan att vara inloggad.
 app.delete("/messages/:id", async (req, res) => {
   if (!isValidId(req.params.id)) return res.status(400).json({ error: "Invalid message ID" })
   try {

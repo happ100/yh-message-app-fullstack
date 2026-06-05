@@ -68,6 +68,7 @@ export const SingleMessage = ({ message, user, onUnauthorized, fetchPosts }) => 
         {isEditing && (
           <div className="edit-wrapper">
             <label>
+              {/* SÄKERHETSBRIST (XSS/Injection): edit-textarea saknar maxlength, ingen begränsning på hur lång eller skadlig text som kan skickas vid redigering. */}
               <textarea
                 className="edit-textarea"
                 rows="3"
@@ -83,12 +84,14 @@ export const SingleMessage = ({ message, user, onUnauthorized, fetchPosts }) => 
         )}
 
         <div className="message-actions">
+          {/* POSITIVT: isOwner-kontrollen döljer redigera-knappen för användare som inte äger meddelandet. JWT-token skickas med vid både DELETE och PATCH-anrop. */}
           <button type="button" className="delete-btn" onClick={onDelete}>🗑️</button>
 
           {isOwner && !isEditing && (
             <button type="button" className="edit-btn" onClick={() => setIsEditing(true)}>✏️</button>
           )}
 
+{/* POSITIVT: Ägarskapskontrollen sker även i backend, endast ägaren av meddelandet kan redigera det. */}
           {isOwner && isEditing && (
             <button type="button" className="save-btn" onClick={onSave}>💾</button>
           )}
